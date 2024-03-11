@@ -1,32 +1,36 @@
-# ce0ae42b24e9451794188ce5c7d5e3a1
 import requests
 from pprint import pprint
 
 
 class NewsFeed:
+    """
+    Representing multiple news titles and links as a single string.
+    """
 
-    def __init__(self, data):
-        self.data = data
+    base_url = "https://newsapi.org/v2/everything?"
+    api_key = "ce0ae42b24e9451794188ce5c7d5e3a1"
+
+    def __init__(self, interest, from_date, to_date, language):
+        self.language = language
+        self.to_date = to_date
+        self.from_date = from_date
+        self.interest = interest
 
     def get(self):
-        pass
+        url = (
+            f"{self.base_url}"
+            f"qInTitle={self.interest}&"
+            f"from={self.from_date}&"
+            f"language={self.language}&"
+            f"to={self.to_date}&"
+            f"apiKey={self.api_key}"
+        )
 
+        response = requests.get(url)
+        content = response.json()
+        articles = content["articles"]
 
-url = 'https://newsapi.org/v2/everything?'\
-      'qInTitle=meditation&'\
-      'from=2024-03-08&'\
-      'language=en&'\
-      'to=2024-03-01&'\
-      'apiKey=ce0ae42b24e9451794188ce5c7d5e3a1'
+        email_body = ""
 
-response = requests.get(url)
-content = response.json()
-articles = content['articles']
-
-
-email_body = ''
-
-for article in articles:
-    email_body = email_body + article['title'] + '\n' + article['url'] + '\n\n'
-
-print(email_body)
+        for article in articles:
+            email_body = email_body + article["title"] + "\n" + article["url"] + "\n\n"
