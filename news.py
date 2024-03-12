@@ -1,5 +1,4 @@
 import requests
-from pprint import pprint
 
 
 class NewsFeed:
@@ -17,6 +16,23 @@ class NewsFeed:
         self.interest = interest
 
     def get(self):
+        url = self._build_url()
+        articles = self._get_articles(url)
+
+        email_body = ""
+
+        for article in articles:
+            email_body = email_body + article["title"] + "\n" + article["url"] + "\n\n"
+
+        return email_body
+
+    def _get_articles(self, url):
+        response = requests.get(url)
+        content = response.json()
+        articles = content["articles"]
+        return articles
+
+    def _build_url(self):
         url = (
             f"{self.base_url}"
             f"qInTitle={self.interest}&"
@@ -25,14 +41,11 @@ class NewsFeed:
             f"to={self.to_date}&"
             f"apiKey={self.api_key}"
         )
+        return url
 
-        response = requests.get(url)
-        content = response.json()
-        articles = content["articles"]
 
-        email_body = ""
-
-        for article in articles:
-            email_body = email_body + article["title"] + "\n" + article["url"] + "\n\n"
-
-        return email_body
+if __name__ == "__main__":
+    news_feed = NewsFeed(
+        interest="nasa", from_date="2024-03-10", to_date="2024-03-12", language="en"
+    )
+    print(news_feed.get())
